@@ -1,11 +1,13 @@
 #include <iostream>
 #include <cuda_runtime.h>
+using namespace std;
 
 __global__
 void vector_add_kernel(const float* A, const float* B, float* C, int N) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < N)
+    if (idx < N){
         C[idx] = A[idx] + B[idx];
+    }
 }
 
 void vector_add_gpu(const float* h_A, const float* h_B, float* h_C, int N){
@@ -40,7 +42,7 @@ void vector_add_gpu(const float* h_A, const float* h_B, float* h_C, int N){
     
     float ms = 0;
     cudaEventElapsedTime(&ms, start, stop);
-    std::cout << "GPU time: " << ms << " ms\n";
+    cout << "GPU time: " << ms << " ms\n";
 
     cudaMemcpy(h_C, d_C, N * sizeof(float), cudaMemcpyDeviceToHost);
 
