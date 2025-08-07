@@ -43,9 +43,9 @@ int main() {
 
     errors = 0;
     for (int i = 0; i < M * N; ++i) {
-        if (!is_close(C_cpu[i], C_gpu_naive[i])) {
+        if (!is_close(C_cpu[i], C_gpu_tiled[i])) {
             if (errors < 10)
-                cout << "Mismatch at " << i << ": CPU=" << C_cpu[i] << " GPU (tiled)=" << C_gpu_naive[i] << "\n";
+                cout << "Mismatch at " << i << ": CPU=" << C_cpu[i] << " GPU (tiled)=" << C_gpu_tiled[i] << "\n";
             errors++;
         }
     }
