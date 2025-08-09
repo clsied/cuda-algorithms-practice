@@ -32,7 +32,7 @@ int main() {
     matrix_conv_naive_gpu(input.data(), kernel.data(), output_gpu_naive.data(), H, W, KH, KW);
     matrix_conv_tiled_gpu(input.data(), kernel.data(), output_gpu_tiled.data(), H, W, KH, KW);
 
-    int errors = 0;
+    float errors = 0;
     for (int i = 0; i < H * W; ++i) {
         if (!is_close(output_cpu[i], output_gpu_naive[i])) {
             if (errors < 10)

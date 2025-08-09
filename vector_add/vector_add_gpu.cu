@@ -32,7 +32,7 @@ void vector_add_gpu(const float* h_A, const float* h_B, float* h_C, int N){
     // addition of blockSize - 1 is equivalent to ceil
     const int gridSize = (N + blockSize - 1) / blockSize; 
     
-    
+
     // only include the time of the kernel execution
     cudaEventRecord(start);
     vector_add_kernel<<<gridSize, blockSize>>>(d_A, d_B, d_C, N);

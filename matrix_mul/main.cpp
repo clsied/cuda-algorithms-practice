@@ -31,7 +31,7 @@ int main() {
     matrix_mul_naive_gpu(A.data(), B.data(), C_gpu_naive.data(), M, N, K);
     matrix_mul_tiled_gpu(A.data(), B.data(), C_gpu_tiled.data(), M, N, K);
 
-    int errors = 0;
+    float errors = 0;
     for (int i = 0; i < M * N; ++i) {
         if (!is_close(C_cpu[i], C_gpu_naive[i])) {
             if (errors < 10)
