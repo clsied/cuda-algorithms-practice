@@ -5,7 +5,7 @@
 #include <cmath>
 using namespace std;
 
-// M x N & N x K matrix multiplication
+// M x K & K x N matrix multiplication
 void matrix_mul_cpu(const float* A, const float* B, float* C, int M, int N, int K);
 void matrix_mul_naive_gpu(const float* A, const float* B, float* C, int M, int N, int K);
 void matrix_mul_tiled_gpu(const float* A, const float* B, float* C, int M, int N, int K);
