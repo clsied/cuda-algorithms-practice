@@ -1,4 +1,4 @@
-# CUDA Algorithm Practice
+# CUDA Algorithms Practice
 
 A collection of CUDA implementations covering fundamental parallel primitives, sparse matrix formats, and application-level algorithms (e.g., Lucas-Kanade Optical Flow).  
 
@@ -25,14 +25,15 @@ This repository serves as my learning record and experiments in GPU programming.
 - [x] ELL format
 
 ### Applications
-- [ ] Lucas-Kanade Optical Flow (in progress)
+- [x] Lucas-Kanade Optical Flow (in progress)
   - [x] goodFeaturesToTrack
     - [x] Harris Corner (shared memory)
     - [x] Vector Reduction (max)
     - [x] Thresholding
+    - [x] Non-Maximum Suppression (on cpu)
   - [x] calcOpticalFlowPyrLK
-    - [x] Image Pyramids
-    - [ ] Linear System Solver
+    - [x] Image Pyramids (With Gaussian Blurring)
+    - [x] Lucas-Kanade (with Iterative refinement)
 
 ## Benchmarks
 
@@ -99,6 +100,15 @@ GPU speedup is computed against the single-thread CPU baseline.
 | GPU (CSR)   | 0.2765          | 2.73× |
 | GPU (ELL)   | 0.2847          | 2.65× |
 
+---
+### Lucas-Kanade Optical Flow (MPI Sintel Dataset)
+
+| Version     | Runtime (ms) | Speedup (×) |
+|-------------|--------------|-------------|
+| CPU (goodFeaturesToTrack)  | 5.6301          | 1× |
+| GPU (goodFeaturesToTrack)  | 2.6394          | 2.13× |
+| CPU (calcOpticalFlowPyrLK)  | 1.3990          | 1× |
+| GPU (calcOpticalFlowPyrLK)   | 0.5485          | 2.55× |
 ## Environment / Dependencies
 
 - OS: Windows 11
@@ -109,3 +119,11 @@ GPU speedup is computed against the single-thread CPU baseline.
 
 Optional:
 - CMake (for larger multi-file projects, not required for single-file `.cu`)
+
+## Dataset / Citation
+
+Optical Flow experiments use the [**MPI Sintel Dataset**](http://sintel.is.tue.mpg.de/downloads)
+
+- Butler, D. J., Wulff, J., Stanley, G. B., & Black, M. J. (2012). 
+*A naturalistic open source movie for optical flow evaluation*. 
+European Conference on Computer Vision (ECCV), 611–625.

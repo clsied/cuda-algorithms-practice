@@ -1,20 +1,16 @@
-#include <iostream>
 #include <cuda_runtime.h>
 #include <opencv2/opencv.hpp>
 #include <thrust/device_vector.h>
 #include <thrust/sort.h>
 #include <thrust/sequence.h>
-#include <thrust/copy.h>
 #include <vector>
 #include <algorithm>
-
-#define TILE_SIZE 16
 #define BLOCK_SIZE 16
-#define MAX_BLOCK_SIZE 7
+#define MAX_WIN_SIZE 7
 
 __global__
-void corner_response_kernel(const float* d_img, int W, int H, float* d_response,int blockSize, bool useHarris, float k){
-    __shared__ float tile[TILE_SIZE + MAX_BLOCK_SIZE + 2][TILE_SIZE + MAX_BLOCK_SIZE + 2];
+void corner_response_kernel(const uchar* d_img, int W, int H, float* d_response,int blockSize, bool useHarris, float k){
+    __shared__ uchar tile[BLOCK_SIZE + MAX_WIN_SIZE + 2][BLOCK_SIZE + MAX_WIN_SIZE + 2];
     
     int tx = threadIdx.x;
     int ty = threadIdx.y;
@@ -23,11 +19,11 @@ void corner_response_kernel(const float* d_img, int W, int H, float* d_response,
     
     int half = blockSize / 2;
     
-    for(int shared_y = ty; shared_y < TILE_SIZE + blockSize + 2; shared_y += blockDim.y){
-        for(int shared_x = tx; shared_x < TILE_SIZE + blockSize + 2; shared_x += blockDim.x){
+    for(int shared_y = ty; shared_y < BLOCK_SIZE + blockSize + 2; shared_y += blockDim.y){
+        for(int shared_x = tx; shared_x < BLOCK_SIZE + blockSize + 2; shared_x += blockDim.x){
             
-            int global_x = blockIdx.x * TILE_SIZE + shared_x - (half + 1);
-            int global_y = blockIdx.y * TILE_SIZE + shared_y - (half + 1);
+            int global_x = blockIdx.x * BLOCK_SIZE + shared_x - (half + 1);
+            int global_y = blockIdx.y * BLOCK_SIZE + shared_y - (half + 1);
             
             // mirror the coordinates
             if (global_x < 0) {
@@ -117,7 +113,7 @@ void threshold_kernel(float* d_response, int W, int H, float threshold) {
 struct CompareResponse {
     const float* d_res_ptr;
     CompareResponse(const float* _ptr) : d_res_ptr(_ptr) {}
-    __device__ 
+    __host__ __device__ 
     bool operator()(int a, int b) const {
         return d_res_ptr[a] > d_res_ptr[b];
     }
@@ -135,16 +131,18 @@ void goodFeaturesToTrack_gpu(cv::InputArray image, cv::OutputArray corners,
     int H = img.rows;
     int N = W * H;
 
-    float *d_img, *d_response;
-    cudaMalloc(&d_img, sizeof(float) * N);
+    uchar *d_img;
+    float *d_response;
+    cudaMalloc(&d_img, sizeof(uchar) * N);
     cudaMalloc(&d_response, sizeof(float) * N);
 
-    cudaMemcpy(d_img, img.ptr<float>(), sizeof(float) * N, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_img, img.ptr<uchar>(), sizeof(uchar) * N, cudaMemcpyHostToDevice);
 
     dim3 blockDim(BLOCK_SIZE, BLOCK_SIZE);
     dim3 gridDim((W + BLOCK_SIZE - 1) / BLOCK_SIZE, (H + BLOCK_SIZE - 1) / BLOCK_SIZE);
     corner_response_kernel<<<gridDim, blockDim>>>(d_img, W, H, d_response, blockSize, useHarrisDetector, k);
-    
+    cudaDeviceSynchronize();
+
     // iterative max reduction
     float* d_buf1;
     float* d_buf2;
@@ -187,8 +185,8 @@ void goodFeaturesToTrack_gpu(cv::InputArray image, cv::OutputArray corners,
     thrust::sequence(d_indices.begin(), d_indices.end());
     float* d_res_ptr = d_response;
 
-
     thrust::sort(d_indices.begin(), d_indices.end(), CompareResponse(d_res_ptr));
+    cudaDeviceSynchronize();
 
     // copy sorted indices to CPU
     std::vector<int> h_indices(N);
@@ -235,5 +233,6 @@ void goodFeaturesToTrack_gpu(cv::InputArray image, cv::OutputArray corners,
     for (size_t i = 0; i < finalCorners.size(); ++i) {
         cornersMat.at<cv::Point2f>(i, 0) = cv::Point2f(finalCorners[i].x, finalCorners[i].y);
     }
-    corners.assign(cornersMat);
+    cornersMat.copyTo(corners);
+
 }
