@@ -234,5 +234,8 @@ void goodFeaturesToTrack_gpu(cv::InputArray image, cv::OutputArray corners,
         cornersMat.at<cv::Point2f>(i, 0) = cv::Point2f(finalCorners[i].x, finalCorners[i].y);
     }
     cornersMat.copyTo(corners);
+    
+    cudaFree(d_img);
+    cudaFree(d_response);
 
 }

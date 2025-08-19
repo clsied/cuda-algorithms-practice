@@ -4,6 +4,12 @@ A collection of CUDA implementations covering fundamental parallel primitives, s
 
 This repository serves as my learning record and experiments in GPU programming.
 
+### Demo with CUDA Lucas-Kanade Optical Flow
+
+| Bandage | Mountain | Sleeping |
+|---------|---------|---------|
+| ![bandage](assets/bandage_2.gif) | ![mountain](assets/mountain_1.gif) | ![sleeping](assets/sleeping_2.gif) |
+
 ### Basic Primitives
 - [x] Vector Addition
 - [x] Vector Reduction (sum)

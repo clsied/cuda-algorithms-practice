@@ -296,4 +296,15 @@ void calcOpticalFlowPyrLK_gpu(cv::InputArray prevImg, cv::InputArray nextImg, cv
         }
 
         nextPtsMat.copyTo(nextPts);
+
+        for (int i = 0; i < maxLevel; i++) {
+            cudaFree(d_prev_img[i]);
+            cudaFree(d_next_img[i]);
+        }
+
+        cudaFree(d_prevPts);
+        cudaFree(d_nextPts);
+        cudaFree(u);
+        cudaFree(v);
+        cudaFree(d_status);
 }
