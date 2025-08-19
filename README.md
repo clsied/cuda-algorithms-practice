@@ -38,8 +38,8 @@ This repository serves as my learning record and experiments in GPU programming.
     - [x] Thresholding
     - [x] Non-Maximum Suppression (on cpu)
   - [x] calcOpticalFlowPyrLK
-    - [x] Image Pyramids (With Gaussian Blurring)
-    - [x] Lucas-Kanade (with Iterative refinement)
+    - [x] Image Pyramids (with gaussian blurring)
+    - [x] Lucas-Kanade (with iterative refinement)
 
 ## Benchmarks
 
@@ -121,7 +121,7 @@ GPU speedup is computed against the single-thread CPU baseline.
 - GPU: NVIDIA GeForce RTX 3060 Ti (8GB)
 - CUDA Toolkit: 12.5
 - Compiler: MSVC (via Visual Studio 2022), C++17 standard
-- OpenCV: 4.12 (for image processing and Optical Flow experiments)
+- OpenCV: 4.12 (for image processing and optical flow experiments)
 
 Optional:
 - CMake (for larger multi-file projects, not required for single-file `.cu`)
